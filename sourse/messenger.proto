@@ -52,11 +52,11 @@ enum MessageType {
 
 // Типов файлов
 enum FileType {
-  UNKNOWN = 0;
-  DOCUMENT = 1;
-  IMAGE = 2;
-  AUDIO = 3;
-  VIDEO = 4;
+  UNKNOWN_FILE = 0;
+  DOCUMENT_FILE = 1;
+  IMAGE_FILE = 2;
+  AUDIO_FILE = 3;
+  VIDEO_FILE = 4;
 }
 
 // Cтатус сообщения
@@ -155,11 +155,34 @@ message ContactList {
 }
 
 // Сообщение в чате
-message SendMessage {
+message SentMessage {
   string id = 1;
   MessageType type = 2;
   string content = 3; // Для текстовых сообщений или ссылки на медиа
 }
+
+/////////
+
+message GetMessagesOffsetRequest {
+  string chatId = 1;
+}
+
+message GetMessagesOffsetResponse {
+  int64 offset = 1;
+}
+
+message GetMessagesConversionRequest {
+  string chatId = 1;
+  int64 offset = 2;
+  int32 count = 3;
+}
+
+message GetMessagesConversionResponse {
+  repeated ChatMessage messages = 1;
+}
+
+/////
+
 
 // Сообщение в чате
 message ChatMessage {
@@ -197,6 +220,38 @@ message GroupChat {
   repeated Role roles = 4;
   string folderId = 5; // разделить на создание и добавление в папку TODO
 }
+
+/////
+
+message GetNewMessagesRequest {
+  string chatId = 1;
+  int64 offset = 2;
+}
+
+message GetGroupChatsOffsetRequest {
+  string userId = 1;
+}
+
+message GetGroupChatsOffsetResponse {
+  int64 offset = 1;
+}
+
+message GetGroupChatsConversionRequest {
+  string userId = 1;
+  int64 offset = 2;
+  int32 count = 3;
+}
+
+message GetGroupChatsConversionResponse {
+  repeated GroupChat chats = 1;
+}
+
+message GetNewGroupChatsRequest {
+  string userId = 1;
+  int64 offset = 2;
+}
+
+/////
 
 // Сообщения для управления участниками группы
 message AddGroupMemberRequest {
@@ -381,7 +436,7 @@ message GetToDoItemsRequest {
 
 // Сервисы
 service MessengerService {
-  rpc SendMessage(SendMessage) returns (ChatMessage);
+  rpc SendMessage(SentMessage) returns (ChatMessage);
   rpc CreateGroupChat(GroupChat) returns (GroupChat);
   rpc UpdateGroupChat(GroupChat) returns (GroupChat);
   rpc AssignRoleToUser(Role) returns (Role);
@@ -439,7 +494,7 @@ service MessengerService {
   // Методы для управления напоминаниями
   rpc UpdateReminder(Reminder) returns (Reminder);
   rpc DeleteReminder(Reminder) returns (Reminder);
-  rpc GetReminders(string) returns (stream Reminder);
+  // rpc GetReminders(string) returns (stream Reminder);
 
   // Методы для управления уведомлениями
   rpc UpdateNotificationSettings(UpdateNotificationSettingsRequest) returns (UpdateNotificationSettingsResponse);
@@ -448,7 +503,7 @@ service MessengerService {
   rpc CreateToDoItem(ToDoItem) returns (ToDoItem);
   rpc UpdateToDoItem(ToDoItem) returns (ToDoItem);
   rpc DeleteToDoItem(ToDoItem) returns (ToDoItem);
-  rpc GetToDoList(string) returns (stream ToDoItem);
+  // rpc GetToDoList(string) returns (stream ToDoItem);
 
   // Методы для получения задач из списка дел
   rpc GetToDoItemsOffset(GetToDoItemsOffsetRequest) returns (GetToDoItemsOffsetResponse);
@@ -475,7 +530,6 @@ service MessengerService {
 //    Создать в 2 репозиториях канбан доску (backend - просто все rpc методы в backlog). Frontend - подумать вам :)
 //    Под все rpc методы написать заглушки, проверить - фронтенд мог сразу проверять
 //    Начинать канбан доску разбирать
-
 
 
 
